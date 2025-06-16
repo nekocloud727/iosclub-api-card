@@ -3,36 +3,33 @@ const puppeteer = require('puppeteer');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('✅ Callback server is running. Route: /callback/card');
+  res.send('✅ Callback server is running. Route: /api');
 });
 
 app.get('/api', async (req, res) => {
   const query = req.query;
-
-  // Tạo URL đích
   const urlParams = new URLSearchParams(query).toString();
   const forwardUrl = `https://iosclub.rf.gd/api/card.php?${urlParams}`;
   console.log('🚀 Forwarding to:', forwardUrl);
 
   try {
     const browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: process.env.CHROME_BIN || undefined,
     });
 
     const page = await browser.newPage();
     await page.goto(forwardUrl, { waitUntil: 'networkidle2' });
 
-    // Lấy phản hồi dưới dạng text (nếu là văn bản)
     const responseText = await page.evaluate(() => document.body.innerText);
-
     await browser.close();
 
     console.log('📩 Phản hồi từ iosclub:', responseText);
-    res.send('✅ Đã chuyển tiếp và xử lý callback thành công');
+    res.send('✅ Đã chuyển tiếp và xử lý callback thành công:\n' + responseText);
   } catch (err) {
     console.error('❌ Lỗi khi chuyển tiếp:', err.message);
-    res.status(500).send('❌ Lỗi server khi chuyển tiếp');
+    res.status(500).send('❌ Lỗi server khi chuyển tiếp:\n' + err.message);
   }
 });
 
