@@ -1,38 +1,33 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('✅ Callback server is running. Route: /api');
+  res.send('✅ Server is running!');
 });
 
 app.get('/api', async (req, res) => {
   const query = req.query;
   const urlParams = new URLSearchParams(query).toString();
-  const forwardUrl = `https://iosclub.rf.gd/api/card.php?${urlParams}`; // api nhận callback
-  console.log('🚀 Forwarding to:', forwardUrl);
+  const forwardUrl = `https://iosclub.rf.gd/api/card.php?${urlParams}`;
+  console.log('🚀 Đang truy cập:', forwardUrl);
 
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
-    await page.goto(forwardUrl, { waitUntil: 'networkidle2' });
+    await page.goto(forwardUrl, { waitUntil: 'networkidle' });
 
-    const responseText = await page.evaluate(() => document.body.innerText);
+    const text = await page.textContent('body');
     await browser.close();
 
-    console.log('📩 Phản hồi từ iosclub:', responseText);
-    res.send('✅ Đã chuyển tiếp và xử lý callback thành công:\n' + responseText);
+    res.send('✅ Kết quả: \n' + text);
   } catch (err) {
-    console.error('❌ Lỗi khi chuyển tiếp:', err.message);
-    res.status(500).send('❌ Lỗi server khi chuyển tiếp:\n' + err.message);
+    console.error('❌ Lỗi:', err);
+    res.status(500).send('❌ Lỗi: ' + err.message);
   }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server chạy tại http://localhost:${PORT}`);
+  console.log(`🚀 Server tại http://localhost:${PORT}`);
 });
