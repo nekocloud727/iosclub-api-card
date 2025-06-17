@@ -9,14 +9,13 @@ app.get('/', (req, res) => {
 app.get('/api', async (req, res) => {
   const query = req.query;
   const urlParams = new URLSearchParams(query).toString();
-  const forwardUrl = `https://iosclub.rf.gd/api/card.php?${urlParams}`;
+  const forwardUrl = `https://iosclub.rf.gd/api/card.php?${urlParams}`; // api nhận callback
   console.log('🚀 Forwarding to:', forwardUrl);
 
   try {
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      // Không cần set executablePath nếu Chromium được tải đúng
     });
 
     const page = await browser.newPage();
