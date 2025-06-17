@@ -2,7 +2,8 @@
   "name": "puppeteer-app",
   "version": "1.0.0",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "puppeteer install"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -10,11 +11,5 @@
   },
   "engines": {
     "node": ">=16"
-  },
-  "puppeteer": {
-    "default_browser": "chrome"
-  },
-  "config": {
-    "PUPPETEER_SKIP_DOWNLOAD": "false"
   }
 }

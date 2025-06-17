@@ -16,7 +16,7 @@ app.get('/api', async (req, res) => {
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: process.env.CHROME_BIN || undefined,
+      // Không cần set executablePath nếu Chromium được tải đúng
     });
 
     const page = await browser.newPage();
